@@ -3,11 +3,13 @@ const { Class, ClassCategory } = require('../models');
 const createClass = async (req, res) => {
   try {
     const { name, description, categoryId } = req.body;
+    const userId = req.user.id;
     
     const newClass = await Class.create({
       name,
       description,
-      categoryId
+      categoryId,
+      userId
     });
 
     res.status(201).json(newClass);
@@ -18,7 +20,9 @@ const createClass = async (req, res) => {
 
 const getAllClasses = async (req, res) => {
   try {
+    const userId = req.user.id;
     const classes = await Class.findAll({
+      where: { userId },
       include: [{
         model: ClassCategory,
         as: 'category'
@@ -34,8 +38,10 @@ const getAllClasses = async (req, res) => {
 const getClassById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id;
     
-    const classWithCategory = await Class.findByPk(id, {
+    const classWithCategory = await Class.findOne({
+      where: { id, userId },
       include: [{
         model: ClassCategory,
         as: 'category'

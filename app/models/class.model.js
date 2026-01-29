@@ -26,6 +26,15 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: "user_id",
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
     },
     {
       tableName: "classes",
@@ -34,6 +43,10 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Class.associate = function(models) {
+    Class.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'user'
+    });
     Class.belongsTo(models.ClassCategory, {
       foreignKey: 'categoryId',
       as: 'category'

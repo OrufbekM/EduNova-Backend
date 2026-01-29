@@ -3,9 +3,11 @@ const { ClassCategory } = require("../models");
 module.exports.createClassCategory = async (req, res) => {
   try {
     const { name } = req.body;
+    const userId = req.user.id;
 
     const category = await ClassCategory.create({
       name,
+      userId,
     });
 
     return res.status(201).json({
@@ -25,7 +27,10 @@ module.exports.updateClassCategory = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    const category = await ClassCategory.findByPk(id);
+    const userId = req.user.id;
+    const category = await ClassCategory.findOne({
+      where: { id, userId }
+    });
 
     if (!category) {
       return res.status(404).json({
@@ -49,7 +54,10 @@ module.exports.updateClassCategory = async (req, res) => {
 
 module.exports.getAllClassCategories = async (req, res) => {
   try {
-    const categories = await ClassCategory.findAll();
+    const userId = req.user.id;
+    const categories = await ClassCategory.findAll({
+      where: { userId }
+    });
 
     return res.status(200).json({
       message: "Class categories retrieved successfully",
@@ -66,7 +74,10 @@ module.exports.getAllClassCategories = async (req, res) => {
 module.exports.getClassCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
-    const category = await ClassCategory.findByPk(id);
+    const userId = req.user.id;
+    const category = await ClassCategory.findOne({
+      where: { id, userId }
+    });
 
     if (!category) {
       return res.status(404).json({
@@ -89,8 +100,11 @@ module.exports.getClassCategoryById = async (req, res) => {
 module.exports.deleteClassCategory = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id;
 
-    const category = await ClassCategory.findByPk(id);
+    const category = await ClassCategory.findOne({
+      where: { id, userId }
+    });
 
     if (!category) {
       return res.status(404).json({

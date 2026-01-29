@@ -3,10 +3,12 @@ const { Lesson, Class } = require('../models');
 const createLesson = async (req, res) => {
   try {
     const { name, classId } = req.body;
+    const userId = req.user.id;
     
     const newLesson = await Lesson.create({
       name,
-      classId
+      classId,
+      userId
     });
 
     res.status(201).json(newLesson);
@@ -17,7 +19,9 @@ const createLesson = async (req, res) => {
 
 const getAllLessons = async (req, res) => {
   try {
+    const userId = req.user.id;
     const lessons = await Lesson.findAll({
+      where: { userId },
       include: [{
         model: Class,
         as: 'class'
@@ -33,8 +37,10 @@ const getAllLessons = async (req, res) => {
 const getLessonById = async (req, res) => {
   try {
     const { id } = req.params;
+    const userId = req.user.id;
     
-    const lessonWithClass = await Lesson.findByPk(id, {
+    const lessonWithClass = await Lesson.findOne({
+      where: { id, userId },
       include: [{
         model: Class,
         as: 'class'
