@@ -21,6 +21,15 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        field: "user_id",
+        references: {
+          model: "users",
+          key: "id",
+        },
+      },
     },
     {
       tableName: "lessons",
@@ -29,6 +38,10 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Lesson.associate = function(models) {
+    Lesson.belongsTo(models.User, {
+      foreignKey: 'userId',
+      as: 'user'
+    });
     Lesson.belongsTo(models.Class, {
       foreignKey: 'classId',
       as: 'class'
