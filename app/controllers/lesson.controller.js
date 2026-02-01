@@ -1,14 +1,26 @@
 const { Lesson, Class } = require('../models');
+const path = require('path');
+
+const toPublicPath = (absolutePath) => {
+  if (!absolutePath) return null;
+  const relative = path.relative(path.join(__dirname, '..', '..'), absolutePath);
+  return relative.replace(/\\/g, '/');
+};
 
 const createLesson = async (req, res) => {
   try {
-    const { name, classId } = req.body;
+    const { name, classId, text } = req.body;
     const userId = req.user.id;
+    const imagePath = req.files && req.files.image ? toPublicPath(req.files.image[0].path) : null;
+    const videoPath = req.files && req.files.video ? toPublicPath(req.files.video[0].path) : null;
     
     const newLesson = await Lesson.create({
       name,
       classId,
-      userId
+      userId,
+      image: imagePath,
+      video: videoPath,
+      text: text || null
     });
 
     res.status(201).json(newLesson);
@@ -60,12 +72,19 @@ const getLessonById = async (req, res) => {
 const updateLesson = async (req, res) => {
   try {
     const lesson = req.lesson;
-    const { name, classId } = req.body;
+    const { name, classId, text } = req.body;
+    const imagePath = req.files && req.files.image ? toPublicPath(req.files.image[0].path) : undefined;
+    const videoPath = req.files && req.files.video ? toPublicPath(req.files.video[0].path) : undefined;
 
-    await lesson.update({
+    const updatePayload = {
       name,
-      classId
-    });
+      classId,
+      text: text ?? lesson.text,
+    };
+    if (imagePath !== undefined) updatePayload.image = imagePath;
+    if (videoPath !== undefined) updatePayload.video = videoPath;
+
+    await lesson.update(updatePayload);
 
     res.status(200).json(lesson);
   } catch (error) {

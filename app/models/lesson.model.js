@@ -30,6 +30,21 @@ module.exports = (sequelize, DataTypes) => {
           key: "id",
         },
       },
+      image: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: "image",
+      },
+      video: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        field: "video",
+      },
+      text: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: "text",
+      },
     },
     {
       tableName: "lessons",
